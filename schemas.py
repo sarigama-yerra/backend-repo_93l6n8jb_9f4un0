@@ -11,10 +11,10 @@ Model name is converted to lowercase for the collection name:
 - BlogPost -> "blogs" collection
 """
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, EmailStr
 from typing import Optional
 
-# Example schemas (replace with your own):
+# Example schemas (you can keep these if useful for admin/testing):
 
 class User(BaseModel):
     """
@@ -22,7 +22,7 @@ class User(BaseModel):
     Collection name: "user" (lowercase of class name)
     """
     name: str = Field(..., description="Full name")
-    email: str = Field(..., description="Email address")
+    email: EmailStr = Field(..., description="Email address")
     address: str = Field(..., description="Address")
     age: Optional[int] = Field(None, ge=0, le=120, description="Age in years")
     is_active: bool = Field(True, description="Whether user is active")
@@ -38,11 +38,16 @@ class Product(BaseModel):
     category: str = Field(..., description="Product category")
     in_stock: bool = Field(True, description="Whether product is in stock")
 
-# Add your own schemas here:
-# --------------------------------------------------
-
-# Note: The Flames database viewer will automatically:
-# 1. Read these schemas from GET /schema endpoint
-# 2. Use them for document validation when creating/editing
-# 3. Handle all database operations (CRUD) directly
-# 4. You don't need to create any database endpoints!
+# Bespoke landscaping inquiry schema (primary for this project)
+class Inquiry(BaseModel):
+    """
+    Customer inquiries for bespoke landscape and hardscaping services
+    Collection name: "inquiry"
+    """
+    name: str = Field(..., min_length=2, max_length=100, description="Client full name")
+    email: EmailStr = Field(..., description="Client email")
+    phone: Optional[str] = Field(None, max_length=30, description="Client phone number")
+    location: Optional[str] = Field(None, max_length=200, description="Project location / city")
+    project_type: Optional[str] = Field(None, max_length=120, description="Type of service (e.g., patio, outdoor kitchen, poolscape)")
+    budget_range: Optional[str] = Field(None, max_length=60, description="Approximate budget range")
+    message: Optional[str] = Field(None, max_length=2000, description="Project description")
